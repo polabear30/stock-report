@@ -743,6 +743,9 @@ def build_html():
 </head>
 <body>
 <div class="page">
+  <div style="font-size:11px;color:var(--t2);letter-spacing:0.3px;margin-bottom:10px;">
+    © 전세영 &nbsp;·&nbsp; <a href="mailto:coolboy30a@naver.com" style="color:var(--t2);text-decoration:none;">coolboy30a@naver.com</a>
+  </div>
 {body}
   <div class="foot">
     생성 시각 {esc(gen)} · 데이터 스냅샷<br>
