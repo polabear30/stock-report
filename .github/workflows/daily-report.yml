@@ -1,0 +1,56 @@
+name: 일일 시황 리포트
+
+# 매일 10:00 KST = 01:00 UTC
+# (GitHub Actions cron은 UTC 기준이며, 부하에 따라 수 분 지연될 수 있음)
+on:
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch: {}   # 수동 실행 버튼
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 동시 실행 방지
+concurrency:
+  group: daily-report
+  cancel-in-progress: false
+
+jobs:
+  build-deploy-notify:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
+
+      - name: 리포트 생성
+        run: python daily_report.py --out _site/index.html --status-out status.json
+
+      - name: Pages 아티팩트 업로드
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: GitHub Pages 배포
+        id: deploy
+        uses: actions/deploy-pages@v4
+
+      - name: 카카오톡 '나에게 보내기'
+        env:
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+        run: |
+          python -m notify.kakao \
+            --url "${{ steps.deploy.outputs.page_url }}" \
+            --status-file status.json

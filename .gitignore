@@ -1,0 +1,21 @@
+# 환경/비밀
+.env
+
+# 로컬 에디터/도구 설정
+.claude/settings.local.json
+
+# 빌드 산출물
+_site/
+status.json
+reports/*.html
+
+# 로컬 로그
+_st_*.log
+
+# 파이썬
+__pycache__/
+*.pyc
+
+# 데이터/DB
+data_store/*.db
+data_store/*.sqlite

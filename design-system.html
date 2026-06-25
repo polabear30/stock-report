@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>US Stock Dashboard — Design System</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" rel="stylesheet">
+<style>
+:root {
+  /* ── Backgrounds ── */
+  --bg-main: #0B0D12;
+  --bg-card: #111318;
+  --bg-sidebar-top: #0F0C1E;
+  --bg-sidebar-mid: #12102A;
+  --bg-sidebar-bot: #0E1628;
+  --bg-chart: #111318;
+  --bg-chart-paper: #0D1117;
+  --bg-elevated: #1A1D24;
+  --bg-info: #131C2B;
+  --bg-alert: #1C1A2E;
+  --bg-success: #0F2A1E;
+
+  /* ── Borders ── */
+  --border-primary: #1E2129;
+  --border-sidebar: #2D2460;
+  --border-info: #1D3461;
+  --border-success: #166534;
+
+  /* ── Text ── */
+  --text-primary: #F3F4F6;
+  --text-secondary: #D1D5DB;
+  --text-tertiary: #9CA3AF;
+  --text-quaternary: #6B7280;
+  --text-muted: #4B5563;
+  --text-faint: #374151;
+  --text-sidebar: #A89EC4;
+  --text-sidebar-btn: #8B7FB8;
+
+  /* ── Accent ── */
+  --accent-purple: #A78BFA;
+  --accent-purple-light: #C4B5FD;
+  --accent-blue: #60A5FA;
+  --accent-blue-light: #93C5FD;
+  --accent-blue-deep: #3B82F6;
+
+  /* ── Semantic ── */
+  --color-bull: #4ADE80;
+  --color-bear: #F87171;
+  --color-warning: #FBBF24;
+  --color-orange: #FB923C;
+  --color-indigo: #818CF8;
+  --color-emerald: #34D399;
+  --color-sky: #38BDF8;
+  --color-yellow: #FCD34D;
+  --color-pink: #F472B6;
+
+  /* ── Fear & Greed ── */
+  --fg-extreme-fear: #EF4444;
+  --fg-fear: #F97316;
+  --fg-neutral: #EAB308;
+  --fg-greed: #22C55E;
+  --fg-extreme-greed: #16A34A;
+
+  /* ── MA Lines ── */
+  --ma5: #F87171;
+  --ma10: #FB923C;
+  --ma20: #FBBF24;
+  --ma100: #34D399;
+  --ma200: #818CF8;
+  --ma400: #F472B6;
+
+  /* ── Tab Colors ── */
+  --tab-nasdaq: #38BDF8;
+  --tab-dow: #818CF8;
+  --tab-sp500: #34D399;
+  --tab-10y: #FB923C;
+  --tab-wti: #F87171;
+  --tab-btc: #FBBF24;
+  --tab-gold: #FCD34D;
+  --tab-dxy: #A78BFA;
+
+  /* ── Radius ── */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 14px;
+  --radius-pill: 20px;
+
+  /* ── Font ── */
+  --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: var(--font-family);
+  background: var(--bg-main);
+  color: var(--text-tertiary);
+  padding: 40px;
+  line-height: 1.6;
+}
+
+h1 {
+  font-size: 32px; font-weight: 900; letter-spacing: -1px;
+  background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+}
+.subtitle { font-size: 13px; color: var(--text-quaternary); margin-bottom: 32px; }
+
+h2 {
+  font-size: 18px; font-weight: 700; color: var(--text-primary);
+  margin: 40px 0 16px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-primary);
+}
+h3 { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin: 20px 0 10px; }
+
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px;
+}
+.stat-card {
+  background: var(--bg-card); border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl); padding: 16px; text-align: center;
+}
+.stat-card .val { font-size: 28px; font-weight: 800; color: var(--text-primary); }
+.stat-card .lbl { font-size: 11px; color: var(--text-quaternary); margin-top: 4px; }
+
+/* ── Swatch Grid ── */
+.color-section { margin-bottom: 24px; }
+.swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.swatch {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg-card); border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md); padding: 10px 14px;
+}
+.swatch-box {
+  width: 32px; height: 32px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary); flex-shrink: 0;
+}
+.swatch-info { min-width: 0; }
+.swatch-name { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+.swatch-hex { font-size: 11px; color: var(--accent-purple); font-family: monospace; }
+.swatch-usage { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+/* ── Table ── */
+table {
+  width: 100%; border-collapse: collapse;
+  background: var(--bg-card); border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+th {
+  text-align: left; font-size: 11px; font-weight: 600; color: var(--text-quaternary);
+  padding: 10px 14px; background: var(--bg-elevated);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+td { padding: 9px 14px; font-size: 12px; border-top: 1px solid var(--border-primary); }
+tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+code {
+  font-family: 'Menlo','Monaco','Consolas',monospace;
+  font-size: 11px; color: var(--accent-purple);
+  background: rgba(167,139,250,0.08); padding: 2px 6px; border-radius: 4px;
+}
+
+/* ── Component Card ── */
+.comp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.comp-card {
+  background: var(--bg-card); border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl); padding: 16px;
+}
+.comp-card .name {
+  font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;
+}
+.comp-card .desc { font-size: 11px; color: var(--text-quaternary); margin-bottom: 10px; }
+.comp-card .meta { font-size: 11px; }
+.comp-card .meta-label { font-weight: 600; color: var(--text-muted); display: block; margin-top: 6px; }
+.comp-card .meta-val { color: var(--text-tertiary); }
+
+/* ── Pill Row ── */
+.pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.pill {
+  font-size: 11px; font-weight: 600; padding: 4px 12px;
+  border-radius: var(--radius-pill); border: 1px solid var(--border-primary);
+}
+
+/* ── Sidebar Preview ── */
+.sidebar-preview {
+  width: 240px; border-radius: var(--radius-xl);
+  background: linear-gradient(180deg, var(--bg-sidebar-top), var(--bg-sidebar-mid), var(--bg-sidebar-bot));
+  border: 1px solid var(--border-sidebar); padding: 24px 16px; display: inline-block;
+}
+.sidebar-preview .title {
+  font-size: 28px; font-weight: 900; letter-spacing: -1.2px; color: #E2DEFF; text-align: center;
+}
+.sidebar-preview .sub {
+  font-size: 10px; color: #6B5FA0; text-align: center; letter-spacing: 2px;
+  text-transform: uppercase; margin-top: 4px; margin-bottom: 16px;
+}
+.sidebar-preview .nav-item {
+  padding: 9px 14px; border-radius: var(--radius-md); font-size: 13px;
+  color: var(--text-tertiary); cursor: pointer; margin-bottom: 2px;
+}
+.sidebar-preview .nav-item.active {
+  background: rgba(167,139,250,0.1); color: var(--accent-purple-light);
+}
+.sidebar-preview hr { border: none; border-top: 1px solid var(--border-sidebar); margin: 12px 0; }
+
+/* ── Plotly Spec ── */
+.spec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.spec-item {
+  background: var(--bg-card); border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md); padding: 10px 14px;
+}
+.spec-item .k { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.spec-item .v { font-size: 13px; color: var(--text-secondary); font-weight: 600; margin-top: 2px; }
+
+.copy-btn {
+  background: rgba(167,139,250,0.12); border: 1px solid var(--accent-purple);
+  color: var(--accent-purple); padding: 6px 16px; border-radius: var(--radius-md);
+  font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--font-family);
+}
+.copy-btn:hover { background: rgba(167,139,250,0.22); }
+
+.footer {
+  margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border-primary);
+  font-size: 11px; color: var(--text-faint); text-align: center;
+}
+</style>
+</head>
+<body>
+
+<h1>US Stock Dashboard</h1>
+<p class="subtitle">Design System &amp; Style Guide — 다른 프로젝트에 복사하여 사용하세요</p>
+
+<div class="stats-row">
+  <div class="stat-card"><div class="val">11</div><div class="lbl">Background Colors</div></div>
+  <div class="stat-card"><div class="val">4</div><div class="lbl">Border Colors</div></div>
+  <div class="stat-card"><div class="val">17</div><div class="lbl">Text + Accent</div></div>
+  <div class="stat-card"><div class="val">9</div><div class="lbl">Semantic Colors</div></div>
+</div>
+
+<!-- ════════════ CSS Variables (Copy Block) ════════════ -->
+<h2>CSS Variables <button class="copy-btn" onclick="copyCSS()">📋 CSS 변수 복사</button></h2>
+<p style="font-size:12px;color:var(--text-quaternary);margin-bottom:12px;">아래 <code>:root</code> 블록을 다른 프로젝트의 CSS에 붙여넣으면 동일한 디자인 토큰을 사용할 수 있습니다.</p>
+<pre id="css-vars" style="background:var(--bg-card);border:1px solid var(--border-primary);border-radius:var(--radius-lg);padding:16px;font-size:11px;color:var(--accent-blue);overflow-x:auto;line-height:1.8;font-family:monospace;">:root {
+  /* Backgrounds */
+  --bg-main: #0B0D12;
+  --bg-card: #111318;
+  --bg-sidebar-top: #0F0C1E;
+  --bg-sidebar-mid: #12102A;
+  --bg-sidebar-bot: #0E1628;
+  --bg-chart: #111318;
+  --bg-chart-paper: #0D1117;
+  --bg-elevated: #1A1D24;
+
+  /* Borders */
+  --border-primary: #1E2129;
+  --border-sidebar: #2D2460;
+
+  /* Text Hierarchy */
+  --text-primary: #F3F4F6;
+  --text-secondary: #D1D5DB;
+  --text-tertiary: #9CA3AF;
+  --text-quaternary: #6B7280;
+  --text-muted: #4B5563;
+
+  /* Accent */
+  --accent-purple: #A78BFA;
+  --accent-blue: #60A5FA;
+  --accent-blue-light: #93C5FD;
+
+  /* Semantic */
+  --color-bull: #4ADE80;
+  --color-bear: #F87171;
+  --color-warning: #FBBF24;
+  --color-orange: #FB923C;
+  --color-indigo: #818CF8;
+  --color-emerald: #34D399;
+  --color-sky: #38BDF8;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-pill: 20px;
+
+  /* Font */
+  --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}</pre>
+
+<!-- ════════════ Font System ════════════ -->
+<h2>Font System</h2>
+<div class="pill-row">
+  <span class="pill" style="background:rgba(96,165,250,0.12);border-color:var(--accent-blue);color:var(--accent-blue);">Pretendard (CDN)</span>
+  <span class="pill" style="color:var(--text-muted);">Fallback: -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif</span>
+</div>
+<table>
+  <thead><tr><th>Name</th><th>Size</th><th>Weight</th><th>Letter Spacing</th><th>Preview</th></tr></thead>
+  <tbody>
+    <tr><td style="color:var(--text-secondary);font-weight:600;">Hero Title</td><td><code>46px</code></td><td>900</td><td><code>-1.8px</code></td><td style="font-size:22px;font-weight:900;color:var(--text-primary);letter-spacing:-1.8px;">미국주식</td></tr>
+    <tr><td style="color:var(--text-secondary);font-weight:600;">Page Title</td><td><code>30px</code></td><td>900</td><td><code>-0.5px</code></td><td style="font-size:18px;font-weight:900;color:var(--text-primary);letter-spacing:-0.5px;">실시간 시황</td></tr>
+    <tr><td style="color:var(--text-secondary);font-weight:600;">Price / Value</td><td><code>18–22px</code></td><td>800</td><td><code>-0.5px</code></td><td style="font-size:16px;font-weight:800;color:var(--text-primary);letter-spacing:-0.5px;">17,452.30</td></tr>
+    <tr><td style="color:var(--text-secondary);font-weight:600;">Section Title</td><td><code>15px</code></td><td>700</td><td>normal</td><td style="font-size:15px;font-weight:700;color:var(--accent-blue);">주요 지수</td></tr>
+    <tr><td style="color:var(--text-secondary);font-weight:600;">Body / Tab</td><td><code>13px</code></td><td>600</td><td>normal</td><td style="font-size:13px;font-weight:600;">나스닥</td></tr>
+    <tr><td style="color:var(--text-secondary);font-weight:600;">Label</td><td><code>12px</code></td><td>500–600</td><td>normal</td><td style="font-size:12px;font-weight:500;">전일대비</td></tr>
+    <tr><td style="color:var(--text-secondary);font-weight:600;">Caption</td><td><code>11px</code></td><td>500–600</td><td><code>0.5px</code></td><td style="font-size:11px;letter-spacing:0.5px;">세부 지표</td></tr>
+    <tr><td style="color:var(--text-secondary);font-weight:600;">Tag / Badge</td><td><code>10px</code></td><td>700</td><td><code>0.3px</code></td><td style="font-size:10px;font-weight:700;letter-spacing:0.3px;">01</td></tr>
+  </tbody>
+</table>
+
+<!-- ════════════ Color Tokens ════════════ -->
+<h2>Color Tokens</h2>
+
+<h3>Backgrounds</h3>
+<div class="swatch-grid">
+  <div class="swatch"><div class="swatch-box" style="background:#0B0D12;"></div><div class="swatch-info"><div class="swatch-name">Main BG</div><div class="swatch-hex">#0B0D12</div><div class="swatch-usage">메인 영역 전체 배경</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#111318;"></div><div class="swatch-info"><div class="swatch-name">Card BG</div><div class="swatch-hex">#111318</div><div class="swatch-usage">카드, 메트릭, 입력 필드</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:linear-gradient(180deg,#0F0C1E,#12102A,#0E1628);"></div><div class="swatch-info"><div class="swatch-name">Sidebar Gradient</div><div class="swatch-hex">#0F0C1E → #12102A → #0E1628</div><div class="swatch-usage">사이드바 배경</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#0D1117;"></div><div class="swatch-info"><div class="swatch-name">Chart Paper</div><div class="swatch-hex">#0D1117</div><div class="swatch-usage">Plotly paper_bgcolor</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#1A1D24;"></div><div class="swatch-info"><div class="swatch-name">Elevated</div><div class="swatch-hex">#1A1D24</div><div class="swatch-usage">칩, 프로그레스바 트랙</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#131C2B;"></div><div class="swatch-info"><div class="swatch-name">Info BG</div><div class="swatch-hex">#131C2B</div><div class="swatch-usage">정보 알림 배경</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#1C1A2E;"></div><div class="swatch-info"><div class="swatch-name">Alert BG</div><div class="swatch-hex">#1C1A2E</div><div class="swatch-usage">경고 알림 배경</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#0F2A1E;"></div><div class="swatch-info"><div class="swatch-name">Success BG</div><div class="swatch-hex">#0F2A1E</div><div class="swatch-usage">성공 메시지 배경</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#1A1830;"></div><div class="swatch-info"><div class="swatch-name">Highlight</div><div class="swatch-hex">#1A1830</div><div class="swatch-usage">오늘 날짜, 현재 카드 강조</div></div></div>
+</div>
+
+<h3>Borders</h3>
+<div class="swatch-grid">
+  <div class="swatch"><div class="swatch-box" style="background:#1E2129;"></div><div class="swatch-info"><div class="swatch-name">Primary</div><div class="swatch-hex">#1E2129</div><div class="swatch-usage">카드, 구분선, 그리드 테두리</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#2D2460;"></div><div class="swatch-info"><div class="swatch-name">Sidebar</div><div class="swatch-hex">#2D2460</div><div class="swatch-usage">사이드바 구분선, 버튼</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#1D3461;"></div><div class="swatch-info"><div class="swatch-name">Info</div><div class="swatch-hex">#1D3461</div><div class="swatch-usage">정보 알림 테두리</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#166534;"></div><div class="swatch-info"><div class="swatch-name">Success</div><div class="swatch-hex">#166534</div><div class="swatch-usage">성공 메시지 테두리</div></div></div>
+</div>
+
+<h3>Text Hierarchy</h3>
+<div class="swatch-grid">
+  <div class="swatch"><div class="swatch-box" style="background:#F3F4F6;"></div><div class="swatch-info"><div class="swatch-name">Primary</div><div class="swatch-hex">#F3F4F6</div><div class="swatch-usage">제목, 가격, 강조</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#D1D5DB;"></div><div class="swatch-info"><div class="swatch-name">Secondary</div><div class="swatch-hex">#D1D5DB</div><div class="swatch-usage">입력 필드, 보조 값</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#9CA3AF;"></div><div class="swatch-info"><div class="swatch-name">Tertiary</div><div class="swatch-hex">#9CA3AF</div><div class="swatch-usage">라벨, 일반 본문</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#6B7280;"></div><div class="swatch-info"><div class="swatch-name">Quaternary</div><div class="swatch-hex">#6B7280</div><div class="swatch-usage">캡션, 시간</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#4B5563;"></div><div class="swatch-info"><div class="swatch-name">Muted</div><div class="swatch-hex">#4B5563</div><div class="swatch-usage">비활성 탭, 타임스탬프</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#374151;"></div><div class="swatch-info"><div class="swatch-name">Faint</div><div class="swatch-hex">#374151</div><div class="swatch-usage">아주 흐린 보조</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#A89EC4;"></div><div class="swatch-info"><div class="swatch-name">Sidebar</div><div class="swatch-hex">#A89EC4</div><div class="swatch-usage">사이드바 전용 텍스트</div></div></div>
+</div>
+
+<h3>Accent</h3>
+<div class="swatch-grid">
+  <div class="swatch"><div class="swatch-box" style="background:#A78BFA;"></div><div class="swatch-info"><div class="swatch-name">Purple</div><div class="swatch-hex">#A78BFA</div><div class="swatch-usage">주요 강조, 게이지, 타임라인</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#C4B5FD;"></div><div class="swatch-info"><div class="swatch-name">Purple Light</div><div class="swatch-hex">#C4B5FD</div><div class="swatch-usage">사이드바 hover</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#60A5FA;"></div><div class="swatch-info"><div class="swatch-name">Blue</div><div class="swatch-hex">#60A5FA</div><div class="swatch-usage">섹션 제목 그라디언트</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#93C5FD;"></div><div class="swatch-info"><div class="swatch-name">Blue Light</div><div class="swatch-hex">#93C5FD</div><div class="swatch-usage">정보 텍스트</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#3B82F6;"></div><div class="swatch-info"><div class="swatch-name">Blue Deep</div><div class="swatch-hex">#3B82F6</div><div class="swatch-usage">정보 알림 좌측 보더</div></div></div>
+</div>
+
+<h3>Semantic (Data Visualization)</h3>
+<div class="swatch-grid">
+  <div class="swatch"><div class="swatch-box" style="background:#4ADE80;"></div><div class="swatch-info"><div class="swatch-name">Bull / Up</div><div class="swatch-hex">#4ADE80</div><div class="swatch-usage">상승, 긍정, 성공</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#F87171;"></div><div class="swatch-info"><div class="swatch-name">Bear / Down</div><div class="swatch-hex">#F87171</div><div class="swatch-usage">하락, 부정, 위험</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#FBBF24;"></div><div class="swatch-info"><div class="swatch-name">Warning</div><div class="swatch-hex">#FBBF24</div><div class="swatch-usage">프리마켓, 경고, 골드</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#FB923C;"></div><div class="swatch-info"><div class="swatch-name">Orange</div><div class="swatch-hex">#FB923C</div><div class="swatch-usage">고용지표, 10Y금리</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#818CF8;"></div><div class="swatch-info"><div class="swatch-name">Indigo</div><div class="swatch-hex">#818CF8</div><div class="swatch-usage">다우존스, 애프터마켓</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#34D399;"></div><div class="swatch-info"><div class="swatch-name">Emerald</div><div class="swatch-hex">#34D399</div><div class="swatch-usage">S&P500, 경기지표</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#38BDF8;"></div><div class="swatch-info"><div class="swatch-name">Sky</div><div class="swatch-hex">#38BDF8</div><div class="swatch-usage">나스닥</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#FCD34D;"></div><div class="swatch-info"><div class="swatch-name">Yellow</div><div class="swatch-hex">#FCD34D</div><div class="swatch-usage">Gold 탭</div></div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#F472B6;"></div><div class="swatch-info"><div class="swatch-name">Pink</div><div class="swatch-hex">#F472B6</div><div class="swatch-usage">MA400선</div></div></div>
+</div>
+
+<!-- ════════════ Tab Colors ════════════ -->
+<h2>Tab Color Mapping</h2>
+<div style="display:flex;gap:6px;flex-wrap:wrap;">
+  <span class="pill" style="color:#38BDF8;border-color:#38BDF8;border-bottom:2px solid #38BDF8;">나스닥 #38BDF8</span>
+  <span class="pill" style="color:#818CF8;border-color:#818CF8;border-bottom:2px solid #818CF8;">다우존스 #818CF8</span>
+  <span class="pill" style="color:#34D399;border-color:#34D399;border-bottom:2px solid #34D399;">S&P500 #34D399</span>
+  <span class="pill" style="color:#FB923C;border-color:#FB923C;border-bottom:2px solid #FB923C;">10Y금리 #FB923C</span>
+  <span class="pill" style="color:#F87171;border-color:#F87171;border-bottom:2px solid #F87171;">WTI #F87171</span>
+  <span class="pill" style="color:#FBBF24;border-color:#FBBF24;border-bottom:2px solid #FBBF24;">비트코인 #FBBF24</span>
+  <span class="pill" style="color:#FCD34D;border-color:#FCD34D;border-bottom:2px solid #FCD34D;">Gold #FCD34D</span>
+  <span class="pill" style="color:#A78BFA;border-color:#A78BFA;border-bottom:2px solid #A78BFA;">DXY #A78BFA</span>
+</div>
+<p style="font-size:11px;color:var(--text-muted);margin-top:8px;">비선택 탭: <code>opacity: 0.4</code> &nbsp;/&nbsp; 선택 탭: <code>opacity: 1</code> + 하단 border 2px</p>
+
+<!-- ════════════ MA Colors ════════════ -->
+<h2>Moving Average Line Colors</h2>
+<div style="display:flex;gap:6px;flex-wrap:wrap;">
+  <span class="pill" style="color:#F87171;border-color:#F87171;">MA5 #F87171</span>
+  <span class="pill" style="color:#FB923C;border-color:#FB923C;">MA10 #FB923C</span>
+  <span class="pill" style="color:#FBBF24;border-color:#FBBF24;">MA20 #FBBF24</span>
+  <span class="pill" style="color:#34D399;border-color:#34D399;">MA100 #34D399</span>
+  <span class="pill" style="color:#818CF8;border-color:#818CF8;">MA200 #818CF8</span>
+  <span class="pill" style="color:#F472B6;border-color:#F472B6;">MA400 #F472B6</span>
+</div>
+
+<!-- ════════════ Fear & Greed Scale ════════════ -->
+<h2>Fear &amp; Greed Gauge Scale</h2>
+<table>
+  <thead><tr><th>Range</th><th>Label</th><th>Color</th><th>BG Step</th><th>Preview</th></tr></thead>
+  <tbody>
+    <tr><td><code>0–25</code></td><td>극단적 공포</td><td><code>#EF4444</code></td><td><code>#1F0F0F</code></td><td><div style="display:flex;gap:6px;align-items:center;"><div style="width:40px;height:12px;border-radius:3px;background:#EF4444;"></div><div style="width:40px;height:12px;border-radius:3px;background:#1F0F0F;border:1px solid var(--border-primary);"></div></td></tr>
+    <tr><td><code>25–45</code></td><td>공포</td><td><code>#F97316</code></td><td><code>#1F160A</code></td><td><div style="display:flex;gap:6px;align-items:center;"><div style="width:40px;height:12px;border-radius:3px;background:#F97316;"></div><div style="width:40px;height:12px;border-radius:3px;background:#1F160A;border:1px solid var(--border-primary);"></div></td></tr>
+    <tr><td><code>45–55</code></td><td>중립</td><td><code>#EAB308</code></td><td><code>#1A1A0A</code></td><td><div style="display:flex;gap:6px;align-items:center;"><div style="width:40px;height:12px;border-radius:3px;background:#EAB308;"></div><div style="width:40px;height:12px;border-radius:3px;background:#1A1A0A;border:1px solid var(--border-primary);"></div></td></tr>
+    <tr><td><code>55–75</code></td><td>탐욕</td><td><code>#22C55E</code></td><td><code>#0A1F12</code></td><td><div style="display:flex;gap:6px;align-items:center;"><div style="width:40px;height:12px;border-radius:3px;background:#22C55E;"></div><div style="width:40px;height:12px;border-radius:3px;background:#0A1F12;border:1px solid var(--border-primary);"></div></td></tr>
+    <tr><td><code>75–100</code></td><td>극단적 탐욕</td><td><code>#16A34A</code></td><td><code>#071A0D</code></td><td><div style="display:flex;gap:6px;align-items:center;"><div style="width:40px;height:12px;border-radius:3px;background:#16A34A;"></div><div style="width:40px;height:12px;border-radius:3px;background:#071A0D;border:1px solid var(--border-primary);"></div></td></tr>
+  </tbody>
+</table>
+
+<!-- ════════════ Border Radius ════════════ -->
+<h2>Border Radius Scale</h2>
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+  <div style="width:48px;height:48px;background:var(--bg-elevated);border:1px solid var(--border-primary);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-quaternary);">4px</div>
+  <div style="width:48px;height:48px;background:var(--bg-elevated);border:1px solid var(--border-primary);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-quaternary);">6px</div>
+  <div style="width:48px;height:48px;background:var(--bg-elevated);border:1px solid var(--border-primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-quaternary);">8px</div>
+  <div style="width:48px;height:48px;background:var(--bg-elevated);border:1px solid var(--border-primary);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-quaternary);">10px</div>
+  <div style="width:48px;height:48px;background:var(--bg-elevated);border:1px solid var(--border-primary);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-quaternary);">12px</div>
+  <div style="width:48px;height:48px;background:var(--bg-elevated);border:1px solid var(--border-primary);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-quaternary);">14px</div>
+  <div style="width:48px;height:48px;background:var(--bg-elevated);border:1px solid var(--border-primary);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-quaternary);">20px</div>
+</div>
+<table>
+  <thead><tr><th>Value</th><th>Usage</th></tr></thead>
+  <tbody>
+    <tr><td><code>4px</code></td><td>프로그레스바, 태그 내부</td></tr>
+    <tr><td><code>6px</code></td><td>성공 뱃지, 작은 버튼</td></tr>
+    <tr><td><code>8px</code></td><td>알림, 세션 칩, 라디오 메뉴</td></tr>
+    <tr><td><code>10px</code></td><td>메트릭 카드, 데이터프레임</td></tr>
+    <tr><td><code>12px</code></td><td>컨테이너, 지수 카드, 컨트롤 박스</td></tr>
+    <tr><td><code>14px</code></td><td>헤더 배너</td></tr>
+    <tr><td><code>20px</code></td><td>필, 뱃지, 섹션 넘버링</td></tr>
+  </tbody>
+</table>
+
+<!-- ════════════ Sidebar Preview ════════════ -->
+<h2>Sidebar</h2>
+<div style="display:flex;gap:24px;align-items:flex-start;">
+  <div class="sidebar-preview">
+    <div class="title">미국주식</div>
+    <div class="sub">US Stock Dashboard</div>
+    <div class="nav-item active">🏠  시황 브리핑</div>
+    <div class="nav-item">💼  포트폴리오</div>
+    <div class="nav-item">📈  기술적 분석</div>
+    <div class="nav-item">📋  보고서</div>
+    <hr>
+    <div style="font-size:11px;color:#4B5563;padding:0 14px;">업데이트 16:30:00</div>
+  </div>
+  <div style="flex:1;">
+    <table>
+      <thead><tr><th>Property</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Background</td><td><code>linear-gradient(180deg, #0F0C1E, #12102A, #0E1628)</code></td></tr>
+        <tr><td>Border Right</td><td><code>1px solid #2D2460</code></td></tr>
+        <tr><td>Text Color</td><td><code>#A89EC4</code></td></tr>
+        <tr><td>Nav Item</td><td>13px, padding: 9px 14px, radius: 8px</td></tr>
+        <tr><td>Hover BG</td><td><code>rgba(167,139,250,0.1)</code></td></tr>
+        <tr><td>Hover Text</td><td><code>#C4B5FD</code></td></tr>
+        <tr><td>Active BG</td><td><code>rgba(167,139,250,0.1)</code></td></tr>
+        <tr><td>Button Border</td><td><code>1px solid #2D2460</code></td></tr>
+        <tr><td>Button Text</td><td><code>#8B7FB8</code></td></tr>
+        <tr><td>Divider</td><td><code>#2D2460</code></td></tr>
+        <tr><td>Hero Title</td><td>46px / 900 / <code>#E2DEFF</code> / spacing: -1.8px</td></tr>
+        <tr><td>Sub Label</td><td>12px / <code>#6B5FA0</code> / uppercase / spacing: 2px</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════ Plotly Defaults ════════════ -->
+<h2>Plotly Chart Layout Defaults</h2>
+<div class="spec-grid">
+  <div class="spec-item"><div class="k">paper_bgcolor</div><div class="v"><code>#0D1117</code></div></div>
+  <div class="spec-item"><div class="k">plot_bgcolor</div><div class="v"><code>#111318</code></div></div>
+  <div class="spec-item"><div class="k">gridcolor</div><div class="v"><code>#1E2129</code></div></div>
+  <div class="spec-item"><div class="k">font color</div><div class="v"><code>#6B7280</code> size 11</div></div>
+  <div class="spec-item"><div class="k">legend font</div><div class="v"><code>#C8D6F8</code> size 11</div></div>
+  <div class="spec-item"><div class="k">hovermode</div><div class="v">x unified</div></div>
+  <div class="spec-item"><div class="k">candlestick up</div><div class="v" style="color:#4ADE80;">#4ADE80</div></div>
+  <div class="spec-item"><div class="k">candlestick down</div><div class="v" style="color:#F87171;">#F87171</div></div>
+  <div class="spec-item"><div class="k">rangeslider</div><div class="v">thickness 0.04–0.05</div></div>
+</div>
+
+<!-- ════════════ Component Patterns ════════════ -->
+<h2>Component Patterns</h2>
+<div class="comp-grid">
+  <div class="comp-card">
+    <div class="name">섹션 타이틀</div>
+    <div class="desc">넘버링 pill + 그라디언트 텍스트 + 영문 보조 라벨</div>
+    <div class="meta">
+      <span class="meta-label">Layout</span><span class="meta-val"><code>display:flex; align-items:center; gap:10px; margin:24px 0 12px</code></span>
+      <span class="meta-label">번호 Pill</span><span class="meta-val"><code>bg: gradient(#1D4ED8→#2563EB)</code> white 10px/700, radius: 20px, padding: 2px 8px</span>
+      <span class="meta-label">제목</span><span class="meta-val"><code>gradient(#60A5FA→#93C5FD)</code> -webkit-background-clip:text, 15px/700</span>
+    </div>
+  </div>
+  <div class="comp-card">
+    <div class="name">지수 카드 (3열 그리드)</div>
+    <div class="desc">이름 + 가격 + 등락률 + SVG 미니캔들</div>
+    <div class="meta">
+      <span class="meta-label">Layout</span><span class="meta-val"><code>grid-template-columns: repeat(3, 1fr); gap: 10px</code></span>
+      <span class="meta-label">Card</span><span class="meta-val">bg: #111318, border: #1E2129, radius: 12px, padding: 14px 16px</span>
+      <span class="meta-label">이름</span><span class="meta-val">#6B7280 11px / 가격: #F3F4F6 18px/800 / 상승: #4ADE80 / 하락: #F87171</span>
+    </div>
+  </div>
+  <div class="comp-card">
+    <div class="name">세션 타임라인 칩</div>
+    <div class="desc">DST 상태 + 프리/정규/애프터 칩 가로 배열</div>
+    <div class="meta">
+      <span class="meta-label">Layout</span><span class="meta-val"><code>display:flex; gap:8px; flex-wrap:wrap</code></span>
+      <span class="meta-label">Active</span><span class="meta-val">bg: {color}18, border: {color}55, dot: box-shadow 0 0 5px</span>
+      <span class="meta-label">Inactive</span><span class="meta-val">bg: #111318, border: #1E2129, text: #6B7280</span>
+    </div>
+  </div>
+  <div class="comp-card">
+    <div class="name">비교 카드 (기간별 점수)</div>
+    <div class="desc">현재/1주/1개월/3개월/6개월/1년 비교 그리드</div>
+    <div class="meta">
+      <span class="meta-label">Layout</span><span class="meta-val"><code>grid-template-columns: repeat(6, 1fr); gap: 8px</code></span>
+      <span class="meta-label">현재</span><span class="meta-val">bg: #1A1830, border: #A78BFA44</span>
+      <span class="meta-label">기타</span><span class="meta-val">bg: #111318, border: #1E2129 / 점수: #F3F4F6 22px/800</span>
+    </div>
+  </div>
+  <div class="comp-card">
+    <div class="name">프로그레스 바 (세부지표)</div>
+    <div class="desc">지표명 + 바 + 점수, 한 줄씩</div>
+    <div class="meta">
+      <span class="meta-label">Track</span><span class="meta-val">bg: #1A1D24, h: 6px, radius: 4px</span>
+      <span class="meta-label">Fill</span><span class="meta-val">등급별 동적 색상, radius: 4px</span>
+      <span class="meta-label">Label</span><span class="meta-val">#9CA3AF 12px, min-width: 160px / 값: 등급색 12px/600</span>
+    </div>
+  </div>
+  <div class="comp-card">
+    <div class="name">경제 캘린더 이벤트</div>
+    <div class="desc">시간 + 항목명 + 카테고리 태그</div>
+    <div class="meta">
+      <span class="meta-label">Layout</span><span class="meta-val"><code>border-left: 3px solid {카테고리색}; radius: 8px</code></span>
+      <span class="meta-label">Tag</span><span class="meta-val">bg: {color}22, color: {color}, radius: 4px, 10px padding: 1px 7px</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ Streamlit Override Selectors ════════════ -->
+<h2>Streamlit CSS Override Targets</h2>
+<table>
+  <thead><tr><th>Selector</th><th>Action</th></tr></thead>
+  <tbody>
+    <tr><td><code>header[data-testid="stHeader"]</code></td><td>display: none (상단 헤더 숨김)</td></tr>
+    <tr><td><code>#MainMenu</code></td><td>display: none (햄버거 메뉴 숨김)</td></tr>
+    <tr><td><code>[data-testid="stToolbar"]</code></td><td>display: none (우측 상단 툴바 숨김)</td></tr>
+    <tr><td><code>[data-testid="stDeployButton"]</code></td><td>display: none (배포 버튼 숨김)</td></tr>
+    <tr><td><code>[data-testid="stSidebarCollapseButton"]</code></td><td>display: none (사이드바 접기 버튼 숨김)</td></tr>
+    <tr><td><code>[data-testid="stSidebarHeader"]</code></td><td>display: none, height: 0 (상단 여백 제거)</td></tr>
+    <tr><td><code>section[data-testid="stSidebar"]</code></td><td>커스텀 그라디언트 배경 + 보더</td></tr>
+    <tr><td><code>[data-testid="stMetric"]</code></td><td>bg: #111318, border: #1E2129, radius: 10px</td></tr>
+    <tr><td><code>[data-testid="stVerticalBlockBorderWrapper"]</code></td><td>bg: #111318, border: #1E2129, radius: 12px</td></tr>
+    <tr><td><code>button[data-baseweb="tab"]</code></td><td>탭별 개별 색상 + opacity 토글</td></tr>
+    <tr><td><code>[data-testid="stSelectbox"] *</code></td><td>bg: #111318, color: #D1D5DB, border: #1E2129</td></tr>
+    <tr><td><code>[data-testid="stDateInput"] *</code></td><td>동일한 다크 테마 입력 스타일</td></tr>
+    <tr><td><code>[data-testid="stDataFrame"]</code></td><td>border: #1E2129, radius: 10px</td></tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  US Stock Dashboard Design System &nbsp;·&nbsp; Extracted from dashboard/app.py &nbsp;·&nbsp; Font: Pretendard &nbsp;·&nbsp; Framework: Streamlit + Plotly
+</div>
+
+<script>
+function copyCSS() {
+  const pre = document.getElementById('css-vars');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✅ 복사됨!';
+    setTimeout(() => { btn.textContent = '📋 CSS 변수 복사'; }, 2000);
+  });
+}
+</script>
+</body>
+</html>
