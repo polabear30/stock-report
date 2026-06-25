@@ -46,15 +46,16 @@ jobs:
         id: deploy
         uses: actions/deploy-pages@v4
 
-      - name: 카카오톡 '나에게 보내기'
+      - name: 이메일로 리포트 링크 전송
         env:
-          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
-          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
         run: |
-          if [ -z "$KAKAO_REST_API_KEY" ] || [ -z "$KAKAO_REFRESH_TOKEN" ]; then
-            echo "::warning::KAKAO 시크릿 미설정 — 카톡 알림을 건너뜁니다. (SETUP_AUTOMATION.md C·D 단계 참고)"
+          if [ -z "$SMTP_USER" ] || [ -z "$SMTP_PASSWORD" ]; then
+            echo "::warning::SMTP 시크릿 미설정 — 이메일 발송을 건너뜁니다. (SETUP_AUTOMATION.md 이메일 설정 참고)"
             exit 0
           fi
-          python -m notify.kakao \
+          python -m notify.email_send \
             --url "${{ steps.deploy.outputs.page_url }}" \
             --status-file status.json
