@@ -51,6 +51,10 @@ jobs:
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
         run: |
+          if [ -z "$KAKAO_REST_API_KEY" ] || [ -z "$KAKAO_REFRESH_TOKEN" ]; then
+            echo "::warning::KAKAO 시크릿 미설정 — 카톡 알림을 건너뜁니다. (SETUP_AUTOMATION.md C·D 단계 참고)"
+            exit 0
+          fi
           python -m notify.kakao \
             --url "${{ steps.deploy.outputs.page_url }}" \
             --status-file status.json
