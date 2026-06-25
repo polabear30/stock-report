@@ -1,10 +1,10 @@
-# 매일 아침 10시 자동 리포트 — 설정 가이드
+# 매일 아침 7시 자동 리포트 — 설정 가이드
 
-매일 **10:00 KST**에 시황 리포트를 생성해 **GitHub Pages**에 게시하고,
+매일 **07:00 KST**에 시황 리포트를 생성해 **GitHub Pages**에 게시하고,
 **이메일로 링크**를 전송합니다. PC를 켜둘 필요가 없습니다.
 
 ```
-[GitHub Actions cron · 매일 01:00 UTC(=10:00 KST)]
+[GitHub Actions cron · 매일 22:00 UTC(=07:00 KST)]
    → daily_report.py 실행 (데이터 수집 + 재시도 + 완결성 검사)
    → _site/index.html 생성 → GitHub Pages 배포 (고정 URL)
    → notify.email_send 로 이메일에 "오늘 리포트 링크" 전송
@@ -72,7 +72,7 @@ GitHub Actions(클라우드)에서 Gmail SMTP로 메일을 보냅니다. 일반 
 
 저장소 → **Actions → "일일 시황 리포트" → Run workflow** (수동 실행)로 즉시 테스트.
 - 성공하면 Pages에 리포트가 뜨고 메일로 링크가 옵니다.
-- 이후 매일 10시(KST)에 자동 실행됩니다.
+- 이후 매일 7시(KST)에 자동 실행됩니다.
 
 로컬에서 테스트하려면:
 ```bash
@@ -99,7 +99,7 @@ python -m notify.email_send --url "https://polabear30.github.io/stock-report/"
   이후 정상 수신됩니다. (보내는 주소 = 받는 주소가 같으면 보통 받은편지함으로 옵니다)
 - **앱 비밀번호**: 구글 계정 비밀번호를 바꿔도 앱 비밀번호는 유지되지만, 계정 보안상
   취소되면 C 단계를 다시 수행해 새 앱 비밀번호로 `SMTP_PASSWORD`를 갱신하세요.
-- **시간 변경**: `.github/workflows/daily-report.yml` 의 `cron: "0 1 * * *"` 수정
-  (UTC 기준, 10시 KST = 1시 UTC).
+- **시간 변경**: `.github/workflows/daily-report.yml` 의 `cron: "0 22 * * *"` 수정
+  (UTC 기준, 7시 KST = 22시 UTC(전날)).
 - **공개 범위**: GitHub Pages는 공개 URL입니다. 공개 시장 데이터라 보통 무방하나,
   비공개가 필요하면 알려주세요(인증 호스팅으로 전환).
