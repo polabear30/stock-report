@@ -3,4 +3,5 @@
 # build_html 경로는 yfinance+requests만, 업로드는 google-cloud-storage만 쓴다.
 yfinance>=0.2.30
 requests>=2.31.0
+fear-greed>=0.1.0
 google-cloud-storage>=2.16.0
