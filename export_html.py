@@ -418,8 +418,9 @@ def build_pcr(pcr: dict, chains: dict) -> str:
 
 def build_calendar() -> str:
     now = datetime.now(KST)
-    # 향후 24시간
-    nx = get_events_next_24h()
+    # 향후 24시간 — 서버(UTC) date.today()가 아니라 KST 기준 날짜로 계산
+    # (리포트가 06:30 KST에 생성될 때 UTC는 아직 전날이라 하루 밀리는 문제 방지)
+    nx = get_events_for_range(now.date(), now.date() + timedelta(days=1))
     nx_html = ""
     if nx:
         for ev in sorted(nx, key=lambda x: x["시간_KST"]):
