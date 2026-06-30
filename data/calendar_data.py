@@ -6,8 +6,10 @@ FOMC 인사 정보, 경제지표 발표 일정, 주요 이벤트를 관리한다
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
+
+KST = timezone(timedelta(hours=9))
 
 
 # ---------------------------------------------------------------------------
@@ -199,10 +201,29 @@ def get_events_for_range(start: date, end: date) -> List[Dict[str, Any]]:
 
 
 def get_events_next_24h() -> List[Dict[str, Any]]:
-    """향후 24시간 이내 이벤트를 반환한다."""
-    today = date.today()
-    tomorrow = today + timedelta(days=1)
-    return get_events_for_range(today, tomorrow)
+    """지금(KST)부터 향후 24시간 이내 이벤트만 반환한다.
+
+    날짜 범위가 아니라 '시각'까지 본 롤링 24시간 윈도우다. (이전 구현은 [오늘,내일]
+    날짜의 이벤트를 전부 반환해 내일 늦은 시각 이벤트가 ~48h 뒤인데도 포함되던 버그가 있었다.)
+    """
+    now = datetime.now(KST)
+    end = now + timedelta(hours=24)
+    picked: List[tuple] = []  # (정렬용 datetime, ev)
+    for ev in CALENDAR_EVENTS:
+        try:
+            hh, mm = map(int, str(ev["시간_KST"]).split(":"))
+            dt = datetime.strptime(ev["날짜"], "%Y-%m-%d").replace(
+                hour=hh, minute=mm, tzinfo=KST)
+        except (ValueError, KeyError):
+            # "종일" 등 시각 불명 — 오늘 날짜면 포함(그날 시작 시각으로 정렬)
+            if ev.get("날짜") == now.date().isoformat():
+                picked.append((now.replace(hour=0, minute=0, second=0, microsecond=0), ev))
+            continue
+        if now <= dt <= end:
+            picked.append((dt, ev))
+    # 자정을 넘는 윈도우(예: 오늘 23:00 + 내일 02:00)에서도 실제 시각순으로 정렬
+    picked.sort(key=lambda x: x[0])
+    return [ev for _, ev in picked]
 
 
 def get_month_summary(year: int, month: int) -> Dict[str, List[Dict[str, Any]]]:

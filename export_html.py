@@ -418,12 +418,13 @@ def build_pcr(pcr: dict, chains: dict) -> str:
 
 def build_calendar() -> str:
     now = datetime.now(KST)
-    # 향후 24시간 — 서버(UTC) date.today()가 아니라 KST 기준 날짜로 계산
-    # (리포트가 06:30 KST에 생성될 때 UTC는 아직 전날이라 하루 밀리는 문제 방지)
-    nx = get_events_for_range(now.date(), now.date() + timedelta(days=1))
+    # 향후 24시간 — 지금(KST)부터 정확히 24시간 내 이벤트만(시각까지 비교).
+    # get_events_next_24h가 KST 기준 롤링 윈도우로 필터+시각순 정렬해 반환한다.
+    # (과거: 날짜 범위 [오늘,내일]이라 내일 늦은 시각 이벤트가 ~48h 뒤인데도 포함되던 버그)
+    nx = get_events_next_24h()
     nx_html = ""
     if nx:
-        for ev in sorted(nx, key=lambda x: x["시간_KST"]):
+        for ev in nx:
             cat = ev["카테고리"]
             col = CATEGORY_COLORS.get(cat, "#6B7280")
             sp = f" · {esc(ev['인사정보'])}" if ev.get("인사정보") else ""

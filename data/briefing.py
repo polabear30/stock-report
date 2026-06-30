@@ -184,7 +184,9 @@ def get_market_indices() -> List[Dict[str, Any]]:
     tickers_str = " ".join(_TICKERS.values())
 
     try:
-        data = yf.download(tickers_str, period="2d", interval="1d", progress=False, threads=True)
+        # 7d: 선물·DXY·크립토는 2d 창에서 유효 일봉이 1개만 와 전일대비가 0이 되는 경우가 있어
+        # 충분히 길게(휴일 포함 최소 2거래일 확보) 받아 직전 거래일 종가로 변화율을 계산한다.
+        data = yf.download(tickers_str, period="7d", interval="1d", progress=False, threads=True)
     except Exception:
         data = None
 
@@ -288,7 +290,13 @@ def get_options_chains(ticker: str = "QQQ", max_exp: int = 4, top_strikes: int =
     try:
         t = yf.Ticker(ticker)
         spot = float(t.history(period="1d")["Close"].iloc[-1])
-        all_exps = t.options[:20]
+        # 이미 만료된 만기 제외 — 미국 동부시간 기준. 장 마감(16:00 ET)이 지났으면
+        # 당일물도 제외(=익일 이후), 마감 전이면 당일물 포함. (06:30 KST 생성 시 06-29
+        # 같은 직전 마감일물이 '최근접 만기'로 노출되던 문제 방지)
+        now_et = datetime.now(get_us_timezone())
+        _cut = now_et.date().isoformat()
+        _keep = (lambda e: e > _cut) if now_et.hour >= 16 else (lambda e: e >= _cut)
+        all_exps = [e for e in t.options if _keep(e)][:20]
     except Exception as e:
         return {"티커": ticker, "현재가": None, "만기목록": [], "에러": str(e)}
 
